@@ -3,13 +3,14 @@
 namespace DCS\Form\SelectCityFormFieldBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormView;
 use DCS\Form\SelectCityFormFieldBundle\Model;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class SelectCityFormType extends AbstractType
 {
@@ -51,9 +52,9 @@ class SelectCityFormType extends AbstractType
         $builder
             ->add('country', 'entity', array(
                 'label'         => 'form.label.country',
-                'empty_value'   => 'form.label.country_empty',
+                'placeholder'   => 'form.label.country_empty',
                 'class'         => $this->countryManager->getClass(),
-                'property'      => 'countryName',
+                'choice_label'      => 'countryName',
                 'choices'       => $this->countryManager->findAll(),
                 'required'      => $options['country_required'],
                 'constraints'   => $this->getConstraints($options['country_required']),
@@ -66,9 +67,9 @@ class SelectCityFormType extends AbstractType
         $refreshRegion = function (FormInterface $form, $countryId = null) use ($options, $regionManager) {
             $form->add('region', 'entity', array(
                 'label'         => 'form.label.region',
-                'empty_value'   => 'form.label.region_empty',
+                'placeholder'   => 'form.label.region_empty',
                 'class'         => $regionManager->getClass(),
-                'property'      => 'regionName',
+                'choice_label'      => 'regionName',
                 'choices'       => null === $countryId ? array() : $regionManager->findAllByCountryId($countryId),
                 'required'      => $options['region_required'],
                 'constraints'   => $this->getConstraints($options['region_required']),
@@ -78,9 +79,9 @@ class SelectCityFormType extends AbstractType
         $refreshCity = function (FormInterface $form, $regionId = null) use ($options, $cityManager) {
             $form->add('city', 'entity', array(
                 'label'         => 'form.label.city',
-                'empty_value'   => 'form.label.city_empty',
+                'placeholder'   => 'form.label.city_empty',
                 'class'         => $cityManager->getClass(),
-                'property'      => 'cityName',
+                'choice_label'      => 'cityName',
                 'choices'       => null === $regionId ? array() : $cityManager->findAllByRegionId($regionId),
                 'required'      => $options['city_required'],
                 'constraints'   => $this->getConstraints($options['city_required']),
@@ -129,17 +130,17 @@ class SelectCityFormType extends AbstractType
     {
         if ($required) {
             return array(
-                new \Symfony\Component\Validator\Constraints\NotBlank(),
+                new NotBlank(),
             );
         }
 
         return array();
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class'            => 'DCS\Form\SelectCityFormFieldBundle\Model\SelectData',
+            'data_class'            => Model\SelectData::class,
             'translation_domain'    => 'DCSFormSelectCityFormFieldBundle',
             'country_required'      => true,
             'region_required'       => true,
@@ -148,13 +149,11 @@ class SelectCityFormType extends AbstractType
             'callback_region'       => 'callbackRegion',
         ));
 
-        $resolver->setAllowedTypes(array(
-            'country_required'      => 'bool',
-            'region_required'       => 'bool',
-            'city_required'         => 'bool',
-            'callback_country'      => 'string',
-            'callback_region'       => 'string',
-        ));
+        $resolver->addAllowedTypes('country_required', 'boolean');
+        $resolver->addAllowedTypes('region_required', 'boolean');
+        $resolver->addAllowedTypes('city_required', 'boolean');
+        $resolver->addAllowedTypes('callback_country', 'string');
+        $resolver->addAllowedTypes('callback_region', 'string');
     }
 
     public function getName()

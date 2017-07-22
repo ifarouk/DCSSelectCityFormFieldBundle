@@ -48,7 +48,7 @@ class ApiController extends Controller
     private function checkSecurity()
     {
         $role = $this->container->getParameter('dcs_select_city_form_field.api_security');
-        $securityContext = $this->get('security.context');
+        $securityContext = $this->get('security.token_storage');
         $token = $securityContext->getToken();
 
         if (null === $token && 'IS_AUTHENTICATED_ANONYMOUSLY' != $role)
