@@ -3,13 +3,13 @@
 namespace DCS\Form\SelectCityFormFieldBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormView;
 use DCS\Form\SelectCityFormFieldBundle\Model;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SelectCityFormType extends AbstractType
 {
@@ -136,7 +136,7 @@ class SelectCityFormType extends AbstractType
         return array();
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class'            => 'DCS\Form\SelectCityFormFieldBundle\Model\SelectData',
@@ -149,9 +149,9 @@ class SelectCityFormType extends AbstractType
         ));
 
         $resolver->setAllowedTypes(array(
-            'country_required'      => 'bool',
-            'region_required'       => 'bool',
-            'city_required'         => 'bool',
+            'country_required'      => 'boolean',
+            'region_required'       => 'boolean',
+            'city_required'         => 'boolean',
             'callback_country'      => 'string',
             'callback_region'       => 'string',
         ));
